@@ -1,15 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Upload and Chatbot</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
   <body>
-    <h2>Upload a File</h2>
-    <form action="/upload/" enctype="multipart/form-data" method="post">
-      <input type="file" name="file" />
-      <button type="submit">Upload</button>
-    </form>
-    <h2>Get Extracted Text</h2>
-    <form action="/get-text/" method="get">
-      <input type="text" name="filename" placeholder="Enter filename" />
-      <button type="submit">Get Text</button>
-    </form>
+    <div class="container">
+      <h2>Upload a File</h2>
+      <form action="/upload/" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+          <input type="file" name="file" />
+        </div>
+        <!-- <button type="submit">Upload</button> -->
+      </form>
+      <button onclick="openChatbot()">Open Chatbot</button>
+      <div class="divider"></div>
+      <footer>Hackathon Project</footer>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot" id="chatbot">
+      <div class="chatbot-header">
+        Chatbot
+        <button class="close-btn" onclick="closeChatbot()">X</button>
+      </div>
+      <div class="chatbot-body" id="chatbot-body">
+        <div class="message bot-message" id="welcome-message">
+          Hello! How can I assist you today?
+        </div>
+      </div>
+      <div class="chatbot-footer">
+        <input type="text" id="chatbot-input" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
+
