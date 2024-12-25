@@ -1,0 +1,7 @@
+routes 
+/upload
+after file upload text must be returned
+prompt 
+upload must have only pdf and docs
+call extract docs and extract pdf should be called in main api
+call templates in fast api
