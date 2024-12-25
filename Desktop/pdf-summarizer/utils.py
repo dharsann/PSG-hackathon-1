@@ -1,6 +1,7 @@
 import fitz 
 from docx import Document
 from langchain_core.prompts import PromptTemplate
+
 def extract_pdf(filepath):
     text = ""
     try:
@@ -13,13 +14,12 @@ def extract_pdf(filepath):
         return f"An error occurred: {e}"
     return text
 
-def extract_docx(filepath):
-    
+def extract_docx(filepath):    
     text = ""
     try:
         doc = Document(filepath)
         for paragraph in doc.paragraphs:
-            text += paragraph.text + "\n"  # Add a newline for better formatting
+            text += paragraph.text + "\n"  
     except Exception as e:
         return f"An error occurred: {e}"
     return text
