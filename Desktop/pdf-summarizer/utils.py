@@ -1,6 +1,9 @@
 import fitz 
 from docx import Document
 from langchain_core.prompts import PromptTemplate
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_API_KEY")
 
 def extract_pdf(filepath):
     text = ""
@@ -45,3 +48,9 @@ def create_prompt(extracted_text):
     )
     final_prompt = prompt.format(document_text=extracted_text)
     return final_prompt
+
+def generate_response(text):
+    prompt = create_prompt(text)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    return response.text
