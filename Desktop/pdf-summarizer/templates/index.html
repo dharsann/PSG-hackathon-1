@@ -1,43 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>File Upload and Chatbot</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h2>Upload a File</h2>
-      <form action="/upload/" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-          <input type="file" name="file" />
-        </div>
-        <!-- <button type="submit">Upload</button> -->
-      </form>
-      <button onclick="openChatbot()">Open Chatbot</button>
-      <div class="divider"></div>
-      <footer>Hackathon Project</footer>
-    </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload and Chatbot</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Upload a File</h2>
+    <form id="upload-form">
+      <div class="form-group">
+        <input type="file" name="file" id="file-input" />
+      </div>
+      <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+    <button onclick="openChatbot()">Open Chatbot</button>
+    <div class="divider"></div>
+    <footer>Hackathon Project</footer>
+  </div>
 
-    <!-- Chatbot -->
-    <div class="chatbot" id="chatbot">
-      <div class="chatbot-header">
-        Chatbot
-        <button class="close-btn" onclick="closeChatbot()">X</button>
-      </div>
-      <div class="chatbot-body" id="chatbot-body">
-        <div class="message bot-message" id="welcome-message">
-          Hello! How can I assist you today?
-        </div>
-      </div>
-      <div class="chatbot-footer">
-        <input type="text" id="chatbot-input" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
+  <div class="chatbot" id="chatbot">
+    <div class="chatbot-header">
+      Chatbot
+      <button class="close-btn" onclick="closeChatbot()">X</button>
+    </div>
+    <div class="chatbot-body" id="chatbot-body">
+      <div class="message bot-message" id="welcome-message">
+        Hello! How can I assist you today?
       </div>
     </div>
+    <div class="chatbot-footer">
+      <input type="text" id="chatbot-input" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
-  </body>
+  <script src="../scripts/script.js"></script>
+</body>
 </html>
-
