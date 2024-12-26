@@ -3,73 +3,65 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from utils import extract_pdf, extract_docx, create_prompt_template, generate_response
+from uuid import uuid4
+from utils import extract_pdf, extract_docx, store_text_in_faiss, process_query
 
-# Create FastAPI app
 app = FastAPI()
 
-# Allow CORS for testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust origins for production
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount static files for serving CSS and JavaScript
+templates = Jinja2Templates(directory="templates")
+
+uploaded_text_id = None
+
 app.mount("/styles", StaticFiles(directory="styles"), name="styles")
 app.mount("/scripts", StaticFiles(directory="scripts"), name="scripts")
 
-# Set up the templates directory
-templates = Jinja2Templates(directory="templates")
-
-# Variable to store extracted text
-uploaded_text = {}
-
-
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    """
-    Render the homepage with the index.html template.
-    """
     return templates.TemplateResponse("index.html", {"request": request})
 
-
 @app.post("/upload/")
-async def upload_file(file: UploadFile = File(...)):
-    """
-    Upload a file, extract its content, and store it in the global variable.
-    """
-    global uploaded_text
-    content = ""
+async def upload_and_open_chatbot(file: UploadFile = File(...)):
+    global uploaded_text_id
 
     try:
-        # Process the file based on its type
         if file.filename.endswith(".pdf"):
-            content = extract_pdf(filepath=file.file)  # Call the `extract_pdf` function
+            text_content = extract_pdf(file.file)
         elif file.filename.endswith(".docx"):
-            content = extract_docx(filepath=file.file)  # Call the `extract_docx` function
+            text_content = extract_docx(file.file)
         else:
-            content = (await file.read()).decode("utf-8")
+            return {"error": "Unsupported file format. Please upload PDF or DOCX files."}
 
-        # Store the extracted text in a variable
-        uploaded_text[file.filename] = content
+        if "An error occurred" in text_content:
+            return {"error": text_content}
+
+        uploaded_text_id = store_text_in_faiss(text_content)
+        return {"message": "File uploaded and processed successfully.", "text_id": uploaded_text_id}
 
     except Exception as e:
         return {"error": f"An error occurred while processing the file: {e}"}
 
-    return {"filename": file.filename, "content": content}
-
 
 @app.post("/chat/")
 async def chat_with_bot(message: str = Form(...)):
-    """
-    Process user message and generate a chatbot response.
-    """
-    # Combine uploaded text as context (if any)
-    context = "\n".join(uploaded_text.values())
-    response = generate_response(query=message, context=context)
-    return {"response": response}
-  
-        
+    try:
+        if not uploaded_text_id:
+            return {"error": "No document uploaded. Please upload a document first."}
+
+        response, retrieved_docs = process_query(message)
+        return {
+            "response": response,
+            "source_documents": [
+                {"content": doc[0], "metadata": doc[1], "score": doc[2]}
+                for doc in retrieved_docs
+            ],
+        }
+    except Exception as e:
+        return {"error": f"An error occurred while processing the query: {e}"}
